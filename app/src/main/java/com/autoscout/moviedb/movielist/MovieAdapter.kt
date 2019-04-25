@@ -1,9 +1,9 @@
 package com.autoscout.moviedb.movielist
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.autoscout.moviedb.R
 import com.autoscout.moviedb.entity.Movie
+import com.autoscout.moviedb.inflate
 
 
 class MovieAdapter(private val onClickListener: (Movie) -> Unit) : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
@@ -17,16 +17,15 @@ class MovieAdapter(private val onClickListener: (Movie) -> Unit) : androidx.recy
     private var isLoadingAdded: Boolean = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
         val viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder
 
         when (viewType) {
             LOADING -> {
-                val view = layoutInflater.inflate(R.layout.item_progress, parent, false)
+                val view = parent.inflate(R.layout.item_progress)
                 viewHolder = LoadingViewHolder(view)
             }
             else -> {
-                val view = layoutInflater.inflate(R.layout.movie_list_item, parent, false)
+                val view = parent.inflate(R.layout.movie_list_item)
                 viewHolder = MovieViewHolder(view, onClickListener)
             }
         }

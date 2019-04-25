@@ -53,7 +53,6 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
 
     }
 
-    private val movieApi: MovieApi = MovieApi.create()
     private val movieCastsAdapter: MovieCastsAdapter = MovieCastsAdapter()
 
     private var movieId: Int = 0
@@ -128,7 +127,7 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun loadCasts() {
-        movieApi.getMovieCredits(movieId).enqueue(object : Callback<MovieCreditsResponse> {
+        MovieApi.movieApi.getMovieCredits(movieId).enqueue(object : Callback<MovieCreditsResponse> {
             override fun onResponse(call: Call<MovieCreditsResponse>, response: Response<MovieCreditsResponse>) {
                 if (response.isSuccessful) {
                     response.body()?.casts?.let {

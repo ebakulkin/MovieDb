@@ -29,4 +29,12 @@ task clean(type: Delete) {
 
 ext {
     retrofitVersion = '2.5.0'
+    appcompatVersion = '1.1.0-alpha04'
+    constraintlayoutVersion = '2.0.0-alpha4'
+    materialVersion = '1.0.0-rc01'
+    glideVersion = '4.6.1'
+    glidepaletteVersion = '2.1.2'
+    junitVersion = '4.12'
+    testRunner = '1.2.0-alpha3'
+    espressoVersion = '3.2.0-alpha03'
 }

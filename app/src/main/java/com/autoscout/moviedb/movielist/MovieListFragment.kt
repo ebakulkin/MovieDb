@@ -23,7 +23,6 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
     companion object {
         private const val TAG: String = "MovieListFragment"
         private const val TOTAL_PAGES = 5
-        private val movieApi: MovieApi = MovieApi.create()
     }
 
     private lateinit var progressBar: ProgressBar
@@ -90,7 +89,7 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
 
 
     private fun loadFirstPage() {
-        movieApi.getMovies(currentPage).enqueue(object : Callback<MovieResponse> {
+        MovieApi.movieApi.getMovies(currentPage).enqueue(object : Callback<MovieResponse> {
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
                 if (response.isSuccessful) {
                     response.body()?.results?.let {
@@ -113,7 +112,7 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
     private fun loadNextPage() {
         Log.d(TAG, "loadNextPage: $currentPage")
 
-        movieApi.getMovies(currentPage).enqueue(object : Callback<MovieResponse> {
+        MovieApi.movieApi.getMovies(currentPage).enqueue(object : Callback<MovieResponse> {
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
                 if (response.isSuccessful) {
                     movieAdapter.removeLoadingFooter()

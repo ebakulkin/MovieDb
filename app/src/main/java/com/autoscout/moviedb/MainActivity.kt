@@ -3,6 +3,8 @@ package com.autoscout.moviedb
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.autoscout.moviedb.movielist.MovieListFragment
 
 class MainActivity : AppCompatActivity() {
@@ -11,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-        supportFragmentManager.beginTransaction().add(R.id.output, MovieListFragment()).commit()
+        supportFragmentManager.inTransaction { add(R.id.output, MovieListFragment()) }
     }
 
     override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
@@ -23,4 +25,8 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(menuItem)
         }
     }
+}
+
+inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
+    beginTransaction().func().commit()
 }
