@@ -20,9 +20,9 @@ import retrofit2.Response
 
 class MovieListFragment : androidx.fragment.app.Fragment() {
 
-    companion object {
-        private const val TAG: String = "MovieListFragment"
-        private const val TOTAL_PAGES = 5
+    private companion object {
+        const val TAG: String = "MovieListFragment"
+        const val TOTAL_PAGES = 5
     }
 
     private lateinit var progressBar: ProgressBar

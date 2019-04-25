@@ -29,9 +29,9 @@ import java.time.format.DateTimeFormatter
 class MovieDetailsFragment : androidx.fragment.app.Fragment() {
 
     companion object {
-        const val BASE_URL_IMG = "https://image.tmdb.org/t/p/w780"
-        const val DETAIL_PAGE_DATA = "detailPageData"
-        const val RELEASE_DATE_FORMAT = "dd MMMM yyyy"
+        private const val BASE_URL_IMG = "https://image.tmdb.org/t/p/w780"
+        private const val DETAIL_PAGE_DATA = "detailPageData"
+        private const val RELEASE_DATE_FORMAT = "dd MMMM yyyy"
 
         fun newInstance(movie: Movie): MovieDetailsFragment {
             val detailPageUiModel = DetailPageUiModel(

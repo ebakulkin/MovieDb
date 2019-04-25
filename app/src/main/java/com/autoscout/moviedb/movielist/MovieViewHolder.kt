@@ -15,7 +15,7 @@ import com.github.florent37.glidepalette.GlidePalette
 
 class MovieViewHolder(itemView: View, onClickListener: (Movie) -> Unit) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
-    companion object {
+    private companion object {
         const val BASE_URL_IMG = "https://image.tmdb.org/t/p/w300"
     }
 
