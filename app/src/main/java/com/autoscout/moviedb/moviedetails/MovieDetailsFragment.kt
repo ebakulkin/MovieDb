@@ -15,12 +15,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.autoscout.moviedb.MovieApi
 import com.autoscout.moviedb.R
+import com.autoscout.moviedb.displayImageurl
 import com.autoscout.moviedb.entity.Movie
 import com.autoscout.moviedb.entity.MovieCreditsResponse
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import retrofit2.Call
 import retrofit2.Callback
@@ -75,12 +72,7 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val posterImg = view.findViewById<ImageView>(R.id.movie_poster)
-        Glide
-            .with(view.context)
-            .load(BASE_URL_IMG + detailPageUiModel.backdropPath)
-            .transition(DrawableTransitionOptions().crossFade())
-            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop())
-            .into(posterImg)
+        posterImg.displayImageurl(BASE_URL_IMG + detailPageUiModel.backdropPath)
 
         (view.findViewById(R.id.title) as TextView).text = detailPageUiModel.name
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

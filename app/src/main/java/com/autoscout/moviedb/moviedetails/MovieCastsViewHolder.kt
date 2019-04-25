@@ -5,7 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.autoscout.moviedb.R
-import com.autoscout.moviedb.displayImageUrl
+import com.autoscout.moviedb.displayImageurl
 import com.autoscout.moviedb.entity.MovieCast
 
 
@@ -20,7 +20,7 @@ class MovieCastsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val characterTextView: TextView = itemView.findViewById(R.id.text_view_cast_as)
 
     fun bind(item: MovieCast) {
-        castImageView.displayImageUrl(BASE_URL_IMG + item.profilePath)
+        castImageView.displayImageurl(BASE_URL_IMG + item.profilePath)
         nameTextView.text = item.name
         characterTextView.text = item.character
     }
