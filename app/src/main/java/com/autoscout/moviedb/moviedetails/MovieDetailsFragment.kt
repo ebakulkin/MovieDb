@@ -35,20 +35,21 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
         const val BASE_URL_IMG = "https://image.tmdb.org/t/p/w780"
 
         fun newInstance(movie: Movie): MovieDetailsFragment {
-            val arguments = Bundle()
+            val detailPageUiModel = DetailPageUiModel(
+                movie.id,
+                movie.title,
+                movie.overview,
+                movie.releaseDate,
+                movie.voteAverage,
+                movie.voteCount,
+                movie.backdropPath
+            )
 
-            arguments.putString("id", movie.id.toString())
-            arguments.putString("name", movie.title)
-            arguments.putString("overview", movie.overview)
-            arguments.putString("releaseDate", movie.releaseDate)
-            arguments.putString("voteAverage", movie.voteAverage.toString())
-            arguments.putString("voteCount", movie.voteCount.toString())
-            arguments.putString("backdropPath", movie.backdropPath)
-
-            val movieDetailsFragment = MovieDetailsFragment()
-            movieDetailsFragment.arguments = arguments
-
-            return movieDetailsFragment
+            return MovieDetailsFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable("detailPageData", detailPageUiModel)
+                }
+            }
         }
 
     }
@@ -59,16 +60,18 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
 
     private var overviewExpanded: Boolean = false
 
-    override fun onCreateView(inflater: LayoutInflater, viewGroup: ViewGroup?, savedInstanceState: Bundle?): View = inflater.inflate(R.layout.movie_details, viewGroup, false)
+    override fun onCreateView(inflater: LayoutInflater, viewGroup: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.movie_details, viewGroup, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        movieId = arguments?.get("id").toString().toInt()
-        val movieName = arguments?.get("name").toString()
-        val movieOverview = arguments?.get("overview").toString()
-        val movieReleaseDate = arguments?.get("releaseDate").toString()
-        val voteAverage = arguments?.get("voteAverage").toString()
-        val voteCount = arguments?.get("voteCount").toString()
-        val backdropPath = arguments?.get("backdropPath")
+        val detailPageUiModel = arguments?.get("detailPageData") as DetailPageUiModel
+        movieId = detailPageUiModel.id
+        val movieName = detailPageUiModel.name
+        val movieOverview = detailPageUiModel.overview
+        val movieReleaseDate = detailPageUiModel.releaseDate
+        val voteAverage = detailPageUiModel.voteAverage
+        val voteCount = detailPageUiModel.voteCount
+        val backdropPath = detailPageUiModel.backdropPath
 
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
         toolbar.title = movieName
@@ -77,29 +80,34 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
 
         val posterImg = view.findViewById<ImageView>(R.id.movie_poster)
         Glide
-                .with(view.context)
-                .load(BASE_URL_IMG + backdropPath)
-                .transition(DrawableTransitionOptions().crossFade())
-                .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop())
-                .into(posterImg)
+            .with(view.context)
+            .load(BASE_URL_IMG + backdropPath)
+            .transition(DrawableTransitionOptions().crossFade())
+            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop())
+            .into(posterImg)
 
         (view.findViewById(R.id.title) as TextView).text = movieName
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            (view.findViewById(R.id.movie_release_date) as TextView).text = LocalDate.parse(movieReleaseDate).format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+            (view.findViewById(R.id.movie_release_date) as TextView).text =
+                LocalDate.parse(movieReleaseDate).format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
         }
-        (view.findViewById(R.id.vote_average) as TextView).text = voteAverage
-        (view.findViewById(R.id.vote_count) as TextView).text = voteCount
+        (view.findViewById(R.id.vote_average) as TextView).text = voteAverage.toString()
+        (view.findViewById(R.id.vote_count) as TextView).text = voteCount.toString()
 
         val favButton = view.findViewById<FloatingActionButton>(R.id.fav_icon)
         favButton.setOnClickListener {
-            Toast.makeText(activity, it.context.getText(R.string.fav_added),
-                    Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                activity, it.context.getText(R.string.fav_added),
+                Toast.LENGTH_LONG
+            ).show()
         }
 
-        val castsRecyclerView: androidx.recyclerview.widget.RecyclerView = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recycler_view_cast_movie_detail).apply {
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            adapter = movieCastsAdapter
-        }
+        val castsRecyclerView: androidx.recyclerview.widget.RecyclerView =
+            view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recycler_view_cast_movie_detail).apply {
+                layoutManager =
+                    androidx.recyclerview.widget.LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                adapter = movieCastsAdapter
+            }
 
         val movieDetailsTextView: TextView = view.findViewById(R.id.movie_details_overview)
         val showMoreButton: Button = view.findViewById(R.id.show_more)
