@@ -5,10 +5,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.autoscout.moviedb.R
+import com.autoscout.moviedb.displayImageUrl
 import com.autoscout.moviedb.entity.MovieCast
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 
 
 class MovieCastsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -22,12 +20,7 @@ class MovieCastsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val characterTextView: TextView = itemView.findViewById(R.id.text_view_cast_as)
 
     fun bind(item: MovieCast) {
-        Glide.with(itemView.context)
-                .asBitmap()
-                .load(BASE_URL_IMG + item.profilePath)
-                .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop())
-                .into(castImageView)
-
+        castImageView.displayImageUrl(BASE_URL_IMG + item.profilePath)
         nameTextView.text = item.name
         characterTextView.text = item.character
     }
