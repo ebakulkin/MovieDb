@@ -13,13 +13,13 @@ import com.bumptech.glide.request.RequestOptions
 
 class MovieCastsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    companion object {
+    private companion object {
         const val BASE_URL_IMG = "https://image.tmdb.org/t/p/w300/"
     }
 
-    private var castImageView: ImageView = itemView.findViewById(R.id.image_view_cast)
-    private var nameTextView: TextView = itemView.findViewById(R.id.text_view_cast_name)
-    private var characterTextView: TextView = itemView.findViewById(R.id.text_view_cast_as)
+    private val castImageView: ImageView = itemView.findViewById(R.id.image_view_cast)
+    private val nameTextView: TextView = itemView.findViewById(R.id.text_view_cast_name)
+    private val characterTextView: TextView = itemView.findViewById(R.id.text_view_cast_as)
 
     fun bind(item: MovieCast) {
         Glide.with(itemView.context)
