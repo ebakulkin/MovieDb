@@ -33,6 +33,8 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
 
     companion object {
         const val BASE_URL_IMG = "https://image.tmdb.org/t/p/w780"
+        const val DETAIL_PAGE_DATA = "detailPageData"
+        const val RELEASE_DATE_FORMAT = "dd MMMM yyyy"
 
         fun newInstance(movie: Movie): MovieDetailsFragment {
             val detailPageUiModel = DetailPageUiModel(
@@ -47,7 +49,7 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
 
             return MovieDetailsFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable("detailPageData", detailPageUiModel)
+                    putParcelable(DETAIL_PAGE_DATA, detailPageUiModel)
                 }
             }
         }
@@ -64,35 +66,29 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
         inflater.inflate(R.layout.movie_details, viewGroup, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val detailPageUiModel = arguments?.get("detailPageData") as DetailPageUiModel
+        val detailPageUiModel = arguments?.get(DETAIL_PAGE_DATA) as DetailPageUiModel
         movieId = detailPageUiModel.id
-        val movieName = detailPageUiModel.name
-        val movieOverview = detailPageUiModel.overview
-        val movieReleaseDate = detailPageUiModel.releaseDate
-        val voteAverage = detailPageUiModel.voteAverage
-        val voteCount = detailPageUiModel.voteCount
-        val backdropPath = detailPageUiModel.backdropPath
 
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
-        toolbar.title = movieName
+        toolbar.title = detailPageUiModel.name
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val posterImg = view.findViewById<ImageView>(R.id.movie_poster)
         Glide
             .with(view.context)
-            .load(BASE_URL_IMG + backdropPath)
+            .load(BASE_URL_IMG + detailPageUiModel.backdropPath)
             .transition(DrawableTransitionOptions().crossFade())
             .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop())
             .into(posterImg)
 
-        (view.findViewById(R.id.title) as TextView).text = movieName
+        (view.findViewById(R.id.title) as TextView).text = detailPageUiModel.name
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             (view.findViewById(R.id.movie_release_date) as TextView).text =
-                LocalDate.parse(movieReleaseDate).format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+                LocalDate.parse(detailPageUiModel.releaseDate).format(DateTimeFormatter.ofPattern(RELEASE_DATE_FORMAT))
         }
-        (view.findViewById(R.id.vote_average) as TextView).text = voteAverage.toString()
-        (view.findViewById(R.id.vote_count) as TextView).text = voteCount.toString()
+        (view.findViewById(R.id.vote_average) as TextView).text = detailPageUiModel.voteAverage.toString()
+        (view.findViewById(R.id.vote_count) as TextView).text = detailPageUiModel.voteCount.toString()
 
         val favButton = view.findViewById<FloatingActionButton>(R.id.fav_icon)
         favButton.setOnClickListener {
@@ -117,19 +113,19 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
                 if (overviewExpanded) {
                     val animation: ObjectAnimator = ObjectAnimator.ofInt(movieDetailsTextView, "maxLines", 3);
                     animation.setDuration(200).start();
-                    showMoreButton.setText("Show more...")
+                    showMoreButton.setText(R.string.show_more)
                     overviewExpanded = false
                 } else {
                     val animation: ObjectAnimator = ObjectAnimator.ofInt(movieDetailsTextView, "maxLines", 40)
                     animation.setDuration(200).start()
-                    showMoreButton.setText("Show less...")
+                    showMoreButton.setText(R.string.show_less)
                     overviewExpanded = true
                 }
             }
         })
 
 
-        movieDetailsTextView.text = movieOverview
+        movieDetailsTextView.text = detailPageUiModel.overview
 
         loadCasts()
     }
