@@ -6,17 +6,21 @@ import com.autoscout.moviedb.entity.Movie
 import com.autoscout.moviedb.inflate
 
 
-class MovieAdapter(private val onClickListener: (Movie) -> Unit) : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
+class MovieAdapter(private val onClickListener: (Movie) -> Unit) :
+    androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
 
-    companion object {
-        private const val ITEM = 0
-        private const val LOADING = 1
+    private companion object {
+        const val ITEM = 0
+        const val LOADING = 1
     }
 
     private val dataList = mutableListOf<Movie>()
     private var isLoadingAdded: Boolean = false
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         val viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder
 
         when (viewType) {
@@ -36,10 +40,10 @@ class MovieAdapter(private val onClickListener: (Movie) -> Unit) : androidx.recy
     override fun getItemCount(): Int = dataList.size
 
     override fun getItemViewType(position: Int): Int =
-            if (position == dataList.lastIndex && isLoadingAdded)
-                LOADING
-            else
-                ITEM
+        if (position == dataList.lastIndex && isLoadingAdded)
+            LOADING
+        else
+            ITEM
 
     override fun onBindViewHolder(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         if (viewHolder is MovieViewHolder)
