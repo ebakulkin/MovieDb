@@ -2,17 +2,16 @@ package com.autoscout.moviedb.movielist
 
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import com.autoscout.moviedb.MovieApi
-import com.autoscout.moviedb.moviedetails.MovieDetailsFragment
 import com.autoscout.moviedb.R
 import com.autoscout.moviedb.entity.Movie
 import com.autoscout.moviedb.entity.MovieResponse
+import com.autoscout.moviedb.moviedetails.MovieDetailsFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,7 +20,6 @@ import retrofit2.Response
 class MovieListFragment : androidx.fragment.app.Fragment() {
 
     private companion object {
-        const val TAG: String = "MovieListFragment"
         const val TOTAL_PAGES = 5
     }
 
@@ -34,8 +32,8 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
     private var currentPage = 1
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.movie_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,21 +41,24 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
 
         (activity as AppCompatActivity).setSupportActionBar(view.findViewById(R.id.toolbar))
 
-        val recyclerView: androidx.recyclerview.widget.RecyclerView = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.movie_list_recycler_view).apply {
-            layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
-            (layoutManager as androidx.recyclerview.widget.GridLayoutManager).spanSizeLookup = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return when (movieAdapter.getItemViewType(position)) {
-                        1 -> 2
-                        else -> 1
+        val recyclerView: androidx.recyclerview.widget.RecyclerView =
+            view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.movie_list_recycler_view).apply {
+                layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
+                (layoutManager as androidx.recyclerview.widget.GridLayoutManager).spanSizeLookup =
+                    object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
+                        override fun getSpanSize(position: Int): Int {
+                            return when (movieAdapter.getItemViewType(position)) {
+                                1 -> 2
+                                else -> 1
+                            }
+                        }
                     }
-                }
+                adapter = movieAdapter
             }
-            adapter = movieAdapter
-        }
         progressBar = view.findViewById(R.id.movie_list_progress)
 
-        recyclerView.addOnScrollListener(object : PaginationScrollListener(recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager) {
+        recyclerView.addOnScrollListener(object :
+            PaginationScrollListener(recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager) {
 
             override val totalPageCount: Int = TOTAL_PAGES
 
@@ -65,7 +66,7 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
                 this@MovieListFragment.isLoading = true
                 currentPage += 1
 
-                Handler().postDelayed({ loadNextPage() }, 1000)
+                Handler().postDelayed({ loadPage() }, 1000)
             }
 
             override val isLoading: Boolean
@@ -76,7 +77,7 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
 
         })
 
-        loadFirstPage()
+        loadPage()
 
     }
 
@@ -88,18 +89,11 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
     }
 
 
-    private fun loadFirstPage() {
+    private fun loadPage() {
         MovieApi.movieApi.getMovies(currentPage).enqueue(object : Callback<MovieResponse> {
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
                 if (response.isSuccessful) {
-                    response.body()?.results?.let {
-                        progressBar.visibility = View.GONE
-                        movieAdapter.update(it)
-                        if (currentPage <= TOTAL_PAGES)
-                            movieAdapter.addLoadingFooter()
-                        else
-                            isLastPage = true
-                    }
+                    updateUi(response.body()?.results)
                 }
             }
 
@@ -109,28 +103,23 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
         })
     }
 
-    private fun loadNextPage() {
-        Log.d(TAG, "loadNextPage: $currentPage")
+    private fun updateUi(movieList: List<Movie>?) {
+        if (currentPage == 1) {
+            progressBar.visibility = View.GONE
+        } else {
+            movieAdapter.removeLoadingFooter()
+            isLoading = false
+        }
 
-        MovieApi.movieApi.getMovies(currentPage).enqueue(object : Callback<MovieResponse> {
-            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                if (response.isSuccessful) {
-                    movieAdapter.removeLoadingFooter()
-                    isLoading = false
-                    response.body()?.results?.let {
-                        movieAdapter.update(it)
-                    }
-                    if (currentPage <= TOTAL_PAGES)
-                        movieAdapter.addLoadingFooter()
-                    else
-                        isLastPage = true
-                }
-            }
+        movieList?.let {
+            movieAdapter.update(it)
+        }
 
-            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+        if (currentPage <= TOTAL_PAGES)
+            movieAdapter.addLoadingFooter()
+        else
+            isLastPage = true
     }
+
 }
 
