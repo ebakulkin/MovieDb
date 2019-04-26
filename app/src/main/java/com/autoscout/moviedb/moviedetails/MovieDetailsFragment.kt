@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.autoscout.moviedb.MovieApi
 import com.autoscout.moviedb.R
 import com.autoscout.moviedb.displayImageurl
@@ -35,13 +36,13 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
 
         fun newInstance(movie: Movie): MovieDetailsFragment {
             val detailPageUiModel = DetailPageUiModel(
-                movie.id,
-                movie.title,
-                movie.overview,
-                movie.releaseDate,
-                movie.voteAverage,
-                movie.voteCount,
-                movie.backdropPath
+                    movie.id,
+                    movie.title,
+                    movie.overview,
+                    movie.releaseDate,
+                    movie.voteAverage,
+                    movie.voteCount,
+                    movie.backdropPath
             )
 
             return MovieDetailsFragment().apply {
@@ -59,46 +60,43 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
 
     private var overviewExpanded: Boolean = false
 
+    private lateinit var toolbar: Toolbar
+    private lateinit var posterImg: ImageView
+    private lateinit var titleTextView: TextView
+    private lateinit var movieReleaseDateTextView: TextView
+    private lateinit var voteAverageTextView: TextView
+    private lateinit var voteCountTextView: TextView
+    private lateinit var favButton: FloatingActionButton
+    private lateinit var castsRecyclerView: RecyclerView
+    private lateinit var movieDetailsTextView: TextView
+    private lateinit var showMoreButton: Button
+
     override fun onCreateView(inflater: LayoutInflater, viewGroup: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.movie_details, viewGroup, false)
+            inflater.inflate(R.layout.movie_details, viewGroup, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val detailPageUiModel = arguments?.get(DETAIL_PAGE_DATA) as DetailPageUiModel
         movieId = detailPageUiModel.id
 
-        val toolbar = view.findViewById(R.id.toolbar) as Toolbar
-        toolbar.title = detailPageUiModel.name
+        initViews(view)
+        setViewsWithArguments(detailPageUiModel)
+
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val posterImg = view.findViewById<ImageView>(R.id.movie_poster)
-        posterImg.displayImageurl(BASE_URL_IMG + detailPageUiModel.backdropPath)
-
-        (view.findViewById(R.id.title) as TextView).text = detailPageUiModel.name
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            (view.findViewById(R.id.movie_release_date) as TextView).text =
-                LocalDate.parse(detailPageUiModel.releaseDate).format(DateTimeFormatter.ofPattern(RELEASE_DATE_FORMAT))
-        }
-        (view.findViewById(R.id.vote_average) as TextView).text = detailPageUiModel.voteAverage.toString()
-        (view.findViewById(R.id.vote_count) as TextView).text = detailPageUiModel.voteCount.toString()
-
-        val favButton = view.findViewById<FloatingActionButton>(R.id.fav_icon)
         favButton.setOnClickListener {
             Toast.makeText(
-                activity, it.context.getText(R.string.fav_added),
-                Toast.LENGTH_LONG
+                    activity, it.context.getText(R.string.fav_added),
+                    Toast.LENGTH_LONG
             ).show()
         }
 
-        val castsRecyclerView: androidx.recyclerview.widget.RecyclerView =
-            view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recycler_view_cast_movie_detail).apply {
-                layoutManager =
-                    androidx.recyclerview.widget.LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-                adapter = movieCastsAdapter
-            }
+        castsRecyclerView.apply {
+            layoutManager =
+                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = movieCastsAdapter
+        }
 
-        val movieDetailsTextView: TextView = view.findViewById(R.id.movie_details_overview)
-        val showMoreButton: Button = view.findViewById(R.id.show_more)
         showMoreButton.setOnClickListener(object : View.OnClickListener {
 
             override fun onClick(v: View?) {
@@ -116,10 +114,33 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
             }
         })
 
-
-        movieDetailsTextView.text = detailPageUiModel.overview
-
         loadCasts()
+    }
+
+    private fun initViews(view: View) {
+        toolbar = view.findViewById(R.id.toolbar)
+        posterImg = view.findViewById(R.id.movie_poster)
+        titleTextView = view.findViewById(R.id.title)
+        movieReleaseDateTextView = view.findViewById(R.id.movie_release_date)
+        voteAverageTextView = view.findViewById(R.id.vote_average)
+        voteCountTextView = view.findViewById(R.id.vote_count)
+        favButton = view.findViewById(R.id.fav_icon)
+        castsRecyclerView = view.findViewById(R.id.recycler_view_cast_movie_detail)
+        movieDetailsTextView = view.findViewById(R.id.movie_details_overview)
+        showMoreButton = view.findViewById(R.id.show_more)
+    }
+
+    private fun setViewsWithArguments(detailPageUiModel: DetailPageUiModel) {
+        toolbar.title = detailPageUiModel.name
+        posterImg.displayImageurl(BASE_URL_IMG + detailPageUiModel.backdropPath)
+        titleTextView.text = detailPageUiModel.name
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            movieReleaseDateTextView.text =
+                    LocalDate.parse(detailPageUiModel.releaseDate).format(DateTimeFormatter.ofPattern(RELEASE_DATE_FORMAT))
+        }
+        voteAverageTextView.text = detailPageUiModel.voteAverage.toString()
+        voteCountTextView.text = detailPageUiModel.voteCount.toString()
+        movieDetailsTextView.text = detailPageUiModel.overview
     }
 
     private fun loadCasts() {
