@@ -4,16 +4,12 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.autoscout.moviedb.R
+import com.autoscout.moviedb.displayPoster
 import com.autoscout.moviedb.entity.Movie
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestOptions
-import com.github.florent37.glidepalette.BitmapPalette
-import com.github.florent37.glidepalette.GlidePalette
 
 
-class MovieViewHolder(itemView: View, onClickListener: (Movie) -> Unit) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
+class MovieViewHolder(itemView: View, onClickListener: (Movie) -> Unit) :
+    androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
     private companion object {
         const val BASE_URL_IMG = "https://image.tmdb.org/t/p/w300"
@@ -36,18 +32,7 @@ class MovieViewHolder(itemView: View, onClickListener: (Movie) -> Unit) : androi
         movieItem = item
         movieName.text = item.title
 
-        Glide
-                .with(itemView.context)
-                .load(BASE_URL_IMG + item.posterPath)
-                .listener(GlidePalette.with(BASE_URL_IMG + item.posterPath)
-                        .use(BitmapPalette.Profile.VIBRANT)
-                        .intoBackground(movieName, BitmapPalette.Swatch.RGB)
-                        .intoTextColor(movieName, BitmapPalette.Swatch.BODY_TEXT_COLOR)
-                        .crossfade(true)
-                )
-                .transition(DrawableTransitionOptions().crossFade())
-                .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop())
-                .into(posterImg)
+        posterImg.displayPoster(BASE_URL_IMG + item.posterPath, movieName)
     }
 
 
