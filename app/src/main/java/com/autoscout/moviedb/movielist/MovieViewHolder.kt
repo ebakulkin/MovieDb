@@ -35,5 +35,4 @@ class MovieViewHolder(itemView: View, onClickListener: (Movie) -> Unit) :
         posterImg.displayPoster(BASE_URL_IMG + item.posterPath, movieName)
     }
 
-
 }
