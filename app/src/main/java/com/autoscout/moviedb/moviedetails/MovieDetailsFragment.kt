@@ -1,12 +1,10 @@
 package com.autoscout.moviedb.moviedetails
 
-import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -58,8 +56,6 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
 
     private var movieId: Int = 0
 
-    private var overviewExpanded: Boolean = false
-
     private lateinit var toolbar: Toolbar
     private lateinit var posterImg: ImageView
     private lateinit var titleTextView: TextView
@@ -68,8 +64,7 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
     private lateinit var voteCountTextView: TextView
     private lateinit var favButton: FloatingActionButton
     private lateinit var castsRecyclerView: RecyclerView
-    private lateinit var movieDetailsTextView: TextView
-    private lateinit var showMoreButton: Button
+    private lateinit var showMoreTextView: ShowMoreTextView
 
     override fun onCreateView(inflater: LayoutInflater, viewGroup: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.movie_details, viewGroup, false)
@@ -97,20 +92,6 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
             adapter = movieCastsAdapter
         }
 
-        showMoreButton.setOnClickListener {
-            overviewExpanded = if (overviewExpanded) {
-                val animation: ObjectAnimator = ObjectAnimator.ofInt(movieDetailsTextView, "maxLines", 3)
-                animation.setDuration(200).start()
-                showMoreButton.setText(R.string.show_more)
-                false
-            } else {
-                val animation: ObjectAnimator = ObjectAnimator.ofInt(movieDetailsTextView, "maxLines", 40)
-                animation.setDuration(200).start()
-                showMoreButton.setText(R.string.show_less)
-                true
-            }
-        }
-
         loadCasts()
     }
 
@@ -123,8 +104,7 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
         voteCountTextView = view.findViewById(R.id.vote_count)
         favButton = view.findViewById(R.id.fav_icon)
         castsRecyclerView = view.findViewById(R.id.recycler_view_cast_movie_detail)
-        movieDetailsTextView = view.findViewById(R.id.movie_details_overview)
-        showMoreButton = view.findViewById(R.id.show_more)
+        showMoreTextView = view.findViewById(R.id.movie_description)
     }
 
     private fun setViewsWithArguments(detailPageUiModel: DetailPageUiModel) {
@@ -137,7 +117,7 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
         }
         voteAverageTextView.text = detailPageUiModel.voteAverage.toString()
         voteCountTextView.text = detailPageUiModel.voteCount.toString()
-        movieDetailsTextView.text = detailPageUiModel.overview
+        showMoreTextView.setText(detailPageUiModel.overview)
     }
 
     private fun loadCasts() {

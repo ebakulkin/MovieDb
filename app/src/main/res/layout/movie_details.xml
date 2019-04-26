@@ -105,32 +105,13 @@
                 app:layout_constraintStart_toStartOf="@id/vote_average"
                 app:layout_constraintTop_toBottomOf="@id/movie_release_date" />
 
-            <TextView
-                android:id="@+id/movie_details_overview"
+            <com.autoscout.moviedb.moviedetails.ShowMoreTextView
+                android:id="@+id/movie_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-medium"
-                android:maxLines="3"
-                android:text="Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy Dummy dummy "
-                android:textSize="15dp"
                 app:layout_constraintStart_toStartOf="@id/recycler_view_cast_movie_detail"
                 app:layout_constraintTop_toBottomOf="@id/recycler_view_cast_movie_detail"
-
                 />
-
-            <Button
-                android:id="@+id/show_more"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:text="Show more..."
-                android:textAllCaps="false"
-                android:textColor="@android:color/holo_blue_light"
-                app:layout_constraintStart_toStartOf="@id/recycler_view_cast_movie_detail"
-                app:layout_constraintTop_toBottomOf="@id/movie_details_overview" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
