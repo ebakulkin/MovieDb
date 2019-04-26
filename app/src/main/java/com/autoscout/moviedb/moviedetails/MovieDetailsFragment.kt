@@ -97,22 +97,19 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
             adapter = movieCastsAdapter
         }
 
-        showMoreButton.setOnClickListener(object : View.OnClickListener {
-
-            override fun onClick(v: View?) {
-                if (overviewExpanded) {
-                    val animation: ObjectAnimator = ObjectAnimator.ofInt(movieDetailsTextView, "maxLines", 3);
-                    animation.setDuration(200).start();
-                    showMoreButton.setText(R.string.show_more)
-                    overviewExpanded = false
-                } else {
-                    val animation: ObjectAnimator = ObjectAnimator.ofInt(movieDetailsTextView, "maxLines", 40)
-                    animation.setDuration(200).start()
-                    showMoreButton.setText(R.string.show_less)
-                    overviewExpanded = true
-                }
+        showMoreButton.setOnClickListener {
+            overviewExpanded = if (overviewExpanded) {
+                val animation: ObjectAnimator = ObjectAnimator.ofInt(movieDetailsTextView, "maxLines", 3)
+                animation.setDuration(200).start()
+                showMoreButton.setText(R.string.show_more)
+                false
+            } else {
+                val animation: ObjectAnimator = ObjectAnimator.ofInt(movieDetailsTextView, "maxLines", 40)
+                animation.setDuration(200).start()
+                showMoreButton.setText(R.string.show_less)
+                true
             }
-        })
+        }
 
         loadCasts()
     }
