@@ -12,15 +12,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.autoscout.moviedb.MovieApi
 import com.autoscout.moviedb.R
 import com.autoscout.moviedb.displayImageurl
 import com.autoscout.moviedb.entity.Movie
-import com.autoscout.moviedb.entity.MovieCreditsResponse
+import com.autoscout.moviedb.entity.MovieCast
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -52,7 +48,8 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
 
     }
 
-    private val movieCastsAdapter: MovieCastsAdapter = MovieCastsAdapter()
+    private val movieCastsAdapter = MovieCastsAdapter()
+    private val movieDetailApiCallManager = MovieDetailApiCallManager()
 
     private var movieId: Int = 0
 
@@ -92,7 +89,8 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
             adapter = movieCastsAdapter
         }
 
-        loadCasts()
+
+        movieDetailApiCallManager.loadCasts(movieId, ::onLoadCastsSuccess, ::onLoadCastsFailure)
     }
 
     private fun initViews(view: View) {
@@ -120,19 +118,12 @@ class MovieDetailsFragment : androidx.fragment.app.Fragment() {
         showMoreTextView.setText(detailPageUiModel.overview)
     }
 
-    private fun loadCasts() {
-        MovieApi.movieApi.getMovieCredits(movieId).enqueue(object : Callback<MovieCreditsResponse> {
-            override fun onResponse(call: Call<MovieCreditsResponse>, response: Response<MovieCreditsResponse>) {
-                if (response.isSuccessful) {
-                    response.body()?.casts?.let {
-                        movieCastsAdapter.update(it)
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<MovieCreditsResponse>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+    private fun onLoadCastsSuccess(casts: List<MovieCast>) {
+        movieCastsAdapter.update(casts)
     }
+
+    private fun onLoadCastsFailure(t: Throwable) {
+        t.printStackTrace()
+    }
+
 }
