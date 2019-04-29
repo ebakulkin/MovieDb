@@ -7,14 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
-import com.autoscout.moviedb.MovieApi
 import com.autoscout.moviedb.R
 import com.autoscout.moviedb.entity.Movie
-import com.autoscout.moviedb.entity.MovieResponse
 import com.autoscout.moviedb.moviedetails.MovieDetailsFragment
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class MovieListFragment : androidx.fragment.app.Fragment() {
@@ -26,14 +21,15 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
     private lateinit var progressBar: ProgressBar
 
     private val movieAdapter = MovieAdapter(::handleClick)
+    private val movieListApiCallManager = MovieListApiCallmanager()
 
     private var isLoading = false
     private var isLastPage = false
     private var currentPage = 1
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.movie_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,23 +38,23 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
         (activity as AppCompatActivity).setSupportActionBar(view.findViewById(R.id.toolbar))
 
         val recyclerView: androidx.recyclerview.widget.RecyclerView =
-            view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.movie_list_recycler_view).apply {
-                layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
-                (layoutManager as androidx.recyclerview.widget.GridLayoutManager).spanSizeLookup =
-                    object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
-                        override fun getSpanSize(position: Int): Int {
-                            return when (movieAdapter.getItemViewType(position)) {
-                                1 -> 2
-                                else -> 1
+                view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.movie_list_recycler_view).apply {
+                    layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
+                    (layoutManager as androidx.recyclerview.widget.GridLayoutManager).spanSizeLookup =
+                            object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
+                                override fun getSpanSize(position: Int): Int {
+                                    return when (movieAdapter.getItemViewType(position)) {
+                                        1 -> 2
+                                        else -> 1
+                                    }
+                                }
                             }
-                        }
-                    }
-                adapter = movieAdapter
-            }
+                    adapter = movieAdapter
+                }
         progressBar = view.findViewById(R.id.movie_list_progress)
 
         recyclerView.addOnScrollListener(object :
-            PaginationScrollListener(recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager) {
+                PaginationScrollListener(recyclerView.layoutManager as androidx.recyclerview.widget.LinearLayoutManager) {
 
             override val totalPageCount: Int = TOTAL_PAGES
 
@@ -90,17 +86,7 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
 
 
     private fun loadPage() {
-        MovieApi.movieApi.getMovies(currentPage).enqueue(object : Callback<MovieResponse> {
-            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                if (response.isSuccessful) {
-                    updateUi(response.body()?.results)
-                }
-            }
-
-            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+        movieListApiCallManager.loadMovies(currentPage, ::onLoadMoviesSuccess, ::onLoadMoviesFailure)
     }
 
     private fun updateUi(movieList: List<Movie>?) {
@@ -121,5 +107,12 @@ class MovieListFragment : androidx.fragment.app.Fragment() {
             isLastPage = true
     }
 
+    private fun onLoadMoviesSuccess(movies: List<Movie>) {
+        updateUi(movies)
+    }
+
+    private fun onLoadMoviesFailure(t: Throwable) {
+        t.printStackTrace()
+    }
 }
 
